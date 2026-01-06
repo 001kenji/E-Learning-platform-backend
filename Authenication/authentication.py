@@ -35,7 +35,7 @@ class SetHeaderMiddleware:
         
         #response = self.get_response(request)
         csp_directives = {            
-            "frame-ancestors": "'self' https://elearning_platform.onrender.com https://e-leraning-platform.netlify.app" ,
+            "frame-ancestors": "'self' elearning-platform-1zjy.onrender.com https://e-leraning-platform.netlify.app" ,
     
         }
 
