@@ -8,7 +8,7 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 from .models import User
 from .models import Course, Lesson, CourseEnrollment, UserProgressLog, CourseRating
-from time import timezone
+from django.utils import timezone  # Add this import at the top
 # ========== Custom User Admin ==========
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
