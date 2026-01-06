@@ -1,0 +1,26 @@
+{% load i18n jazzmin %}
+
+<div class="row">
+    <div class="col-5">
+        <div class="dataTables_info" role="status" aria-live="polite">
+            {% blocktrans with cl.result_count as count %}Showing {{ count }} entries{% endblocktrans %}
+        </div>
+    </div>
+    <div class="col-7">
+        <ul class="pagination pagination-sm m-0 float-right">
+            {% if pagination_required %}
+                {% for i in page_range %}
+                    {% if i == cl.page_num %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ i|add:1 }}</span>
+                        </li>
+                    {% else %}
+                        <li class="page-item">
+                            <a href="?p={{ i|add:1 }}" class="page-link">{{ i|add:1 }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        </ul>
+    </div>
+</div>
