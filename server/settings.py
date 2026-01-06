@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 from pathlib import Path
 from dotenv import load_dotenv
 import os
+import dj_database_url
 from datetime import timedelta
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,7 +28,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG') 
 
-ALLOWED_HOSTS = [os.getenv('ALLOWED_HOSTS'),"127.0.0.1"]
+ALLOWED_HOSTS = [os.getenv('ALLOWED_HOSTS')] #"127.0.0.1"
 
 AUTH_USER_MODEL = 'Authenication.User'  # IMPORTANT: Replace 'your_app_name'
 # Application definition
@@ -89,16 +90,30 @@ WSGI_APPLICATION = 'server.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DATABASE_NAME'),
-        'USER': os.getenv('DATABASE_USER'),
-        'PASSWORD': os.getenv('DATABASE_PASSWORD'),
-        'HOST': os.getenv('DATABASE_HOST', 'localhost'),
-        'PORT': os.getenv('DATABASE_PORT', '5432'),
+# Try DATABASE_URL first (for Render), fallback to individual vars (for local)
+DATABASE_URL = os.getenv('DATABASE_URL')
+
+if DATABASE_URL:
+    # Production (Render)
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=DATABASE_URL,
+            conn_max_age=600,
+            ssl_require=True  # Important for Render
+        )
     }
-}
+else:
+    # Development (local with individual vars)
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('DATABASE_NAME', 'learning_dashboard'),
+            'USER': os.getenv('DATABASE_USER', 'admin'),
+            'PASSWORD': os.getenv('DATABASE_PASSWORD', 'learning'),
+            'HOST': os.getenv('DATABASE_HOST', 'localhost'),
+            'PORT': os.getenv('DATABASE_PORT', '5432'),
+        }
+    }
 
 # Email settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -152,6 +167,7 @@ STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage' # Use WhiteNoise static files storage for production
 
 STATICFILES_DIRS = [
     BASE_DIR / 'static',  # Add this if you want to use the static folder
@@ -233,15 +249,15 @@ DJOSER = {
 # CORS configuration
 CORS_ALLOWED_ORIGINS = [
     os.getenv('FRONTEND'),
-    "http://localhost:5173",
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
+    # "http://localhost:5173",
+    # "http://localhost:3000",
+    # "http://127.0.0.1:3000",
 ]
 CSRF_TRUSTED_ORIGINS = [
    os.getenv('FRONTEND'),
-   "http://localhost:5173",
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
+#    "http://localhost:5173",
+#     "http://localhost:3000",
+#     "http://127.0.0.1:3000",
 ]
 
 # Add these for better CORS handling
