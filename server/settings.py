@@ -250,12 +250,14 @@ DJOSER = {
 # CORS configuration
 CORS_ALLOWED_ORIGINS = [
     os.getenv('FRONTEND'),
+    "https://elearning-platform-1zjy.onrender.com",
     # "http://localhost:5173",
     # "http://localhost:3000",
     # "http://127.0.0.1:3000",
 ]
 CSRF_TRUSTED_ORIGINS = [
    os.getenv('FRONTEND'),
+   "https://elearning-platform-1zjy.onrender.com",
 #    "http://localhost:5173",
 #     "http://localhost:3000",
 #     "http://127.0.0.1:3000",
