@@ -26,9 +26,10 @@ load_dotenv(os.path.join(BASE_DIR, '.env'))
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG') 
+DEBUG = False
 
-ALLOWED_HOSTS = ['https://elearning-platform-1zjy.onrender.com', 'localhost', '127.0.0.1'] #"127.0.0.1"
+# ✅ CORRECT - domain only, no protocol
+ALLOWED_HOSTS = ['elearning-platform-1zjy.onrender.com', 'localhost', '127.0.0.1']
 
 AUTH_USER_MODEL = 'Authenication.User'  # IMPORTANT: Replace 'your_app_name'
 # Application definition
