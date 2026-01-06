@@ -3,7 +3,7 @@ from rest_framework import serializers
 from .models import User
 from .models import Course, Lesson, CourseEnrollment, UserProgressLog, CourseRating
 from django.contrib.auth import get_user_model
-
+from django.conf import settings
 class UserCreateSerializer(BaseUserCreateSerializer):
     first_name = serializers.CharField(required=True)
     last_name = serializers.CharField(required=True)
@@ -80,10 +80,31 @@ class CourseSerializer(serializers.ModelSerializer):
                            'total_lessons', 'total_enrollments', 'average_rating']
     
     def get_file_url(self, obj):
+        if obj.course_file and hasattr(obj.course_file, 'url'):
+            relative_url = obj.course_file.url
+            
+            # Use MEDIA_DOMAIN from settings, fallback to request
+            if hasattr(settings, 'MEDIA_DOMAIN'):
+                # Ensure we don't duplicate the domain if it's already in the URL
+                if relative_url.startswith('http'):
+                    # If it already has protocol, make sure it's HTTPS
+                    url = relative_url.replace('http://', 'https://')
+                    # Also ensure it uses your correct domain
+                    if 'elearning-platform-1zjy.onrender.com' in url:
+                        return url
+                
+                # Build URL with HTTPS domain
+                return f"{settings.MEDIA_DOMAIN}{relative_url}"
+            
+            # Fallback: use request with HTTPS force
             request = self.context.get('request')
-            if obj.course_file and hasattr(obj.course_file, 'url'):
-                return request.build_absolute_uri(obj.course_file.url)
-            return None
+            if request:
+                # Force HTTPS
+                url = request.build_absolute_uri(relative_url)
+                return url.replace('http://', 'https://')
+            
+            return relative_url
+        return None
 
     def create(self, validated_data):
         """Set the creator to the current user."""
